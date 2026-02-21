@@ -9,7 +9,7 @@
 
     public interface ICommandHandler<T> //CommandHandler will handle a command
     {
-        void Handle(T command); // Handle method will take a command as a parameter and return void
+        Task Handle(T command); // Handle method will take a command as a parameter and return void
     }
     public interface IQuery<TResult> // Query class will return a result, so we use generic type TResult
     {

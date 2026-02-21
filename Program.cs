@@ -1,8 +1,14 @@
+using CustomerManagementSystem.Application;
+using CustomerManagementSystem.Entities;
+using CustomerManagementSystem.Repository;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddScoped<CreateCustomerHandlers>();
+builder.Services.AddDbContext<CustomerMappingDbContext>();
+builder.Services.AddScoped<IRepository<Customer>, EfCustomer>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

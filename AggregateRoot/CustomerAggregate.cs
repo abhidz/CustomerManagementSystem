@@ -20,6 +20,7 @@ namespace CustomerManagementSystem.AggregateRoot
         public CustomerAggregate(string Name, decimal money)
         {
             _customer = new Customer();
+            _customer.Id = Guid.NewGuid().ToString();
             _customer.Name = Name;
             _customer.Money = new Money(money);
             _customer.Addresses = new List<Address>();

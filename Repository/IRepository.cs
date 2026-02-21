@@ -28,19 +28,29 @@ namespace CustomerManagementSystem.Repository
 
     public abstract class EFRepositoryAbstract<T> : RepositoryAbstract<T>
     {
-       protected CustomerMappingDbContext _dbContext = new CustomerMappingDbContext();
+       protected readonly CustomerMappingDbContext _dbContext;
+        protected EFRepositoryAbstract(CustomerMappingDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
     }
 
     public class EfCustomer: EFRepositoryAbstract<Customer>
     {
+        public EfCustomer(CustomerMappingDbContext dbContext)
+       : base(dbContext)
+        {
+        }
         public override List<Customer> GetAll()
         {
-            throw new NotImplementedException();
+            return _dbContext.Customers.ToList();
         }
 
         public override List<Customer> GetAllById(int id)
         {
-            throw new NotImplementedException();
+            return _dbContext.Customers
+           .Where(x => Convert.ToInt32(x.Id) == id)
+           .ToList();
         }
 
         public override bool Save(Customer entity)

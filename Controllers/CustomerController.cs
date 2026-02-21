@@ -10,9 +10,15 @@ namespace CustomerManagementSystem.Controllers
     [ApiController]
     public class CustomerController : ControllerBase
     {
+        private readonly CreateCustomerHandlers _handler;
+
+        public CustomerController(CreateCustomerHandlers handler)
+        {
+            _handler = handler;
+        }
         // POST api/<CustomerController>
         [HttpPost]
-        public void Post([FromBody] CustomerDto customerDto)
+        public async Task<IActionResult> Post([FromBody] CustomerDto customerDto)
         {
             var command = new CreateCustomerCommand();
             command.Name = customerDto.Name;
@@ -21,8 +27,8 @@ namespace CustomerManagementSystem.Controllers
             {
                 command.Addresses.Add(address);
             }
-            var handler = new CreateCustomerHandlers();
-            handler.Handle(command); // It will call database, event sourcing and publish event to message queue.
+            await _handler.Handle(command); // It will call database, event sourcing and publish event to message queue.
+            return Ok();
         }
        
     }

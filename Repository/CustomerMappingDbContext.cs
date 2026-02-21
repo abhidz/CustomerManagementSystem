@@ -28,5 +28,6 @@ namespace CustomerManagementSystem.Repository
                    .ToTable("tblAddress");
         }
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<OutboxMessage> OutboxMessages { get; set; }
     }
 }

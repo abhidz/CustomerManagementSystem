@@ -1,6 +1,7 @@
 ﻿using CustomerManagementSystem.Entities;
 using CustomerManagementSystem.Event;
 using CustomerManagementSystem.Repository;
+using System.Text.Json;
 
 namespace CustomerManagementSystem.Application
 {
@@ -22,21 +23,46 @@ namespace CustomerManagementSystem.Application
 
     public class CreateCustomerHandlers : ICommandHandler<CreateCustomerCommand>
     {
-        public void Handle(CreateCustomerCommand command)
+        private readonly IRepository<Customer> _repository;
+        private readonly CustomerMappingDbContext _dbContext;
+
+        public CreateCustomerHandlers(IRepository<Customer> repository, CustomerMappingDbContext dbContext)
         {
+            _repository = repository;
+            _dbContext = dbContext;
+        }
+
+        public async Task Handle(CreateCustomerCommand command)
+        {
+
             var aggregatRootInstance = Factory.CreateCustomer(command.Name, command.Money, command.Addresses);
             if (aggregatRootInstance.Validate())
             {
                 // Save the aggregate root instance to the repository
-                var entity = aggregatRootInstance.GetCustomer();
-                IRepository<Customer> respository = new EfCustomer(); // Get the repository instance (e.g., from dependency injection)
-                if (respository.Save(entity))
+                var customer = aggregatRootInstance.GetCustomer();
+                // Use a DB transaction so Customer and Outbox rows are saved atomically
+                try
                 {
-                    Console.WriteLine("Customer created successfully.");
+                    _dbContext.Customers.Add(customer);
+
+                    // create outbox entries for each domain event
+                    foreach (var e in aggregatRootInstance.GetEvents())
+                    {
+                        var payload = JsonSerializer.Serialize(e, e.GetType());
+                        var outbox = new OutboxMessage
+                        {
+                            AggregateId = customer.Id,
+                            Type = e.GetType().FullName ?? e.GetType().Name,
+                            Payload = payload
+                        };
+                        _dbContext.OutboxMessages.Add(outbox);
+                    }
+
+                    await _dbContext.SaveChangesAsync();
                 }
-                else
+                catch (Exception ex)
                 {
-                    Console.WriteLine("Failed to create customer.");
+                    throw new Exception("Failed to save customer and outbox messages", ex);
                 }
 
                 // Save to Audit log or event sourcing system
@@ -57,3 +83,4 @@ namespace CustomerManagementSystem.Application
             }
         }
     }
+}
