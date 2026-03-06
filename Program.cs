@@ -1,5 +1,6 @@
 using CustomerManagementSystem.Application;
 using CustomerManagementSystem.Entities;
+using CustomerManagementSystem.Mapper;
 using CustomerManagementSystem.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<CreateCustomerHandlers>();
 builder.Services.AddDbContext<CustomerMappingDbContext>();
 builder.Services.AddScoped<IRepository<Customer>, EfCustomer>();
+builder.Services.AddAutoMapper(typeof(CustomerMapper));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

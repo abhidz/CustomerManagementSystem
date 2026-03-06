@@ -1,8 +1,7 @@
-﻿using CustomerManagementSystem.Application;
+﻿using AutoMapper;
+using CustomerManagementSystem.Application;
 using CustomerManagementSystem.DTO;
 using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace CustomerManagementSystem.Controllers
 {
@@ -11,22 +10,19 @@ namespace CustomerManagementSystem.Controllers
     public class CustomerController : ControllerBase
     {
         private readonly CreateCustomerHandlers _handler;
+        private readonly IMapper _mapper;
 
-        public CustomerController(CreateCustomerHandlers handler)
+        public CustomerController(CreateCustomerHandlers handler, IMapper mapper)
         {
             _handler = handler;
+            _mapper = mapper;
         }
         // POST api/<CustomerController>
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CustomerDto customerDto)
         {
             var command = new CreateCustomerCommand();
-            command.Name = customerDto.Name;
-            command.Money = decimal.Parse(customerDto.Amount);
-            foreach (var address in customerDto.Addresses)
-            {
-                command.Addresses.Add(address);
-            }
+            _mapper.Map(customerDto, command);
             await _handler.Handle(command); // It will call database, event sourcing and publish event to message queue.
             return Ok();
         }

@@ -4,10 +4,7 @@ namespace CustomerManagementSystem.DTO
 {
     public class CustomerDto
     {
-        public int ID { get; set; }
-        public Guid Guid { get; set; }
         public string Name { get; set; }
-        public string Country { get; set; }
         public string Amount { get; set; }
 
         public List<Address> Addresses { get; set; }
