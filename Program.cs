@@ -2,6 +2,7 @@ using CustomerManagementSystem.Application;
 using CustomerManagementSystem.Entities;
 using CustomerManagementSystem.Mapper;
 using CustomerManagementSystem.Repository;
+using MediatR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ builder.Services.AddScoped<CreateCustomerHandlers>();
 builder.Services.AddDbContext<CustomerMappingDbContext>();
 builder.Services.AddScoped<IRepository<Customer>, EfCustomer>();
 builder.Services.AddAutoMapper(typeof(CustomerMapper));
+builder.Services.AddMediatR(typeof(CreateCustomerHandlers).Assembly);
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

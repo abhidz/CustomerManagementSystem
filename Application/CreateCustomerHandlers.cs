@@ -1,10 +1,12 @@
 ﻿using CustomerManagementSystem.Entities;
 using CustomerManagementSystem.Event;
 using CustomerManagementSystem.Repository;
+using MediatR;
 using System.Text.Json;
 
 namespace CustomerManagementSystem.Application
 {
+
     public class CreateCustomerCommand : ICommand
     {
         public string Id { get; }
@@ -32,9 +34,8 @@ namespace CustomerManagementSystem.Application
             _dbContext = dbContext;
         }
 
-        public async Task Handle(CreateCustomerCommand command)
+        public async Task<Unit> Handle(CreateCustomerCommand command, CancellationToken cancellationToken)
         {
-
             var aggregatRootInstance = Factory.CreateCustomer(command.Name, command.Money, command.Addresses);
             if (aggregatRootInstance.Validate())
             {
@@ -81,6 +82,7 @@ namespace CustomerManagementSystem.Application
                     }
                 }
             }
+            return Unit.Value;
         }
     }
 }

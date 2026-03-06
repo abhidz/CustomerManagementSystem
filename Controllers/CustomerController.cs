@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CustomerManagementSystem.Application;
 using CustomerManagementSystem.DTO;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CustomerManagementSystem.Controllers
@@ -9,13 +10,15 @@ namespace CustomerManagementSystem.Controllers
     [ApiController]
     public class CustomerController : ControllerBase
     {
-        private readonly CreateCustomerHandlers _handler;
         private readonly IMapper _mapper;
+        private readonly ILogger<CustomerController> _logger;
+        private readonly IMediator _mediator;
 
-        public CustomerController(CreateCustomerHandlers handler, IMapper mapper)
+        public CustomerController(IMapper mapper, ILogger<CustomerController> logger, IMediator mediator)
         {
-            _handler = handler;
             _mapper = mapper;
+            _logger = logger;
+            _mediator = mediator;
         }
         // POST api/<CustomerController>
         [HttpPost]
@@ -23,7 +26,7 @@ namespace CustomerManagementSystem.Controllers
         {
             var command = new CreateCustomerCommand();
             _mapper.Map(customerDto, command);
-            await _handler.Handle(command); // It will call database, event sourcing and publish event to message queue.
+            await _mediator.Send(command); // It will call database, event sourcing and publish event to message queue.
             return Ok();
         }
        

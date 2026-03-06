@@ -1,15 +1,16 @@
-﻿namespace CustomerManagementSystem.Application
+﻿using MediatR;
+
+namespace CustomerManagementSystem.Application
 {
     // These both are Marker interfaces for CQRS pattern. They don't have any members, but they are used to identify
     // the type of the class (Command or Query) and to enforce a certain structure in the application.
-    public interface ICommand
+    public interface ICommand : IRequest<Unit>
     {
 
     }
 
-    public interface ICommandHandler<T> //CommandHandler will handle a command
+    public interface ICommandHandler<T> : IRequestHandler<T, Unit> where T : ICommand//CommandHandler will handle a command
     {
-        Task Handle(T command); // Handle method will take a command as a parameter and return void
     }
     public interface IQuery<TResult> // Query class will return a result, so we use generic type TResult
     {
