@@ -1,8 +1,10 @@
 using CustomerManagementSystem.Application;
 using CustomerManagementSystem.Entities;
 using CustomerManagementSystem.Mapper;
+using CustomerManagementSystem.Middleware;
 using CustomerManagementSystem.Repository;
 using MediatR;
+using Microsoft.AspNetCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,11 +16,12 @@ builder.Services.AddScoped<IRepository<Customer>, EfCustomer>();
 builder.Services.AddAutoMapper(typeof(CustomerMapper));
 builder.Services.AddMediatR(typeof(CreateCustomerHandlers).Assembly);
 var app = builder.Build();
+app.UseMiddleware<ExceptionMiddleware>();
 
-// Configure the HTTP request pipeline.
+//Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+   app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
@@ -27,11 +30,11 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
 
 app.Run();
