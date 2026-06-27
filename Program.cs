@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Diagnostics;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+// Adding Azure Application Insights telemetry to the application for monitoring and diagnostics.
+builder.Services.AddApplicationInsightsTelemetry();
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<CreateCustomerHandlers>();
 builder.Services.AddDbContext<CustomerMappingDbContext>();
